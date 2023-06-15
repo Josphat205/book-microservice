@@ -8,6 +8,14 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(
+  express.json({
+    limit: "5mb",
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString();
+    }
+  })
+);
 
 mongoose.connect('mongodb+srv://jloman200:jloman200@cluster0.cpsbbed.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -34,8 +42,8 @@ app.get('/books/:id', async(req, res) => {
 
 // Add a new book
 app.post('/books',async(req, res) => {
-    const{ author, title, cost } = req.body;
-    const book = new Book({ author, title, cost });
+    const{ author, title, cost, image } = req.body;
+    const book = new Book({ author, title, cost, image });
     try {
         const result = await book.save();
         res.send(result);
